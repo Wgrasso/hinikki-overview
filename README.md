@@ -104,7 +104,7 @@ authentication token minting — the sensitive keys never reach a device.
 
 ## Status
 
-On TestFlight and in active development with a small team. Privacy work — DPIA, a granular consent
+On TestFlight and in active development. I lead the project and the small team building it. Privacy work — DPIA, a granular consent
 flow, an Article 6/9 legal-basis mapping, processor agreements — is scoped and underway ahead of
 wider testing, because voice transcripts, photos, schedules and precise location can constitute
 special-category health data under GDPR regardless of how few users you have.
@@ -121,4 +121,4 @@ the architecture is the interesting part, and architecture can be discussed in t
 
 ---
 
-*Built by [Willem Grasso](https://github.com/Wgrasso) with a small team.*
+*Built by [Willem Grasso](https://github.com/Wgrasso), who leads the project and its team.*
