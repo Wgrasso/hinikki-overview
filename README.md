@@ -2,7 +2,7 @@
 
 # HiNikki
 
-**A voice companion for older adults living with dementia — and the family app that keeps its world true.**
+**A voice companion for older adults living with dementia, and the family app that keeps its world true.**
 
 An iOS app, currently on TestFlight. This repository is the public overview: what it does, how it is
 built, and the design decisions worth defending. The source is private.
@@ -12,7 +12,7 @@ built, and the design decisions worth defending. The source is private.
 ## The problem
 
 Someone living with dementia asks the same questions many times a day. What day is it. Is my
-daughter coming. Did I take my pills. A voice assistant can answer all of those — but a generic one
+daughter coming. Did I take my pills. A voice assistant can answer all of those, but a generic one
 answers *generically*, and gets it wrong in the ways that matter most, because it has no idea who
 your daughter is or whether she is actually coming.
 
@@ -26,8 +26,8 @@ learned.
 
 ## The core idea: one AI, a brain around it
 
-**Nikki's intelligence is deliberately not in our codebase.** The conversation loop — speech to
-text, the language model, text to speech, turn-taking, interruption, barge-in — runs inside
+**Nikki's intelligence is deliberately not in our codebase.** The conversation loop, meaning speech to
+text, the language model, text to speech, turn-taking, interruption and barge-in, runs inside
 ElevenLabs Conversational AI. What we build is the brain *around* it: everything that turns a
 generic voice model into *this person's* companion, and everything that turns a conversation into
 data a family can safely act on.
@@ -43,9 +43,9 @@ data a family can safely act on.
            └──── proposals ── family reviews ── write-back ◄──┘        write path
 ```
 
-**Read path.** Before a call starts, the app assembles what Nikki should know *right now* — the
+**Read path.** Before a call starts, the app assembles what Nikki should know *right now*, the
 person's profile, who is in their life, today's schedule, the weather where they actually are,
-recent conversation summaries — and injects it as dynamic variables.
+and recent conversation summaries. It injects that as dynamic variables.
 
 **Write path.** This is the part I would defend in a design review.
 
@@ -53,7 +53,7 @@ recent conversation summaries — and injects it as dynamic variables.
 
 A language model talking to a confused person is a data-integrity problem wearing a friendly voice.
 If Nikki mishears "my son visited" as a fact, and that fact silently enters the family record, the
-record is now worse than useless — it is confidently wrong, and nobody knows.
+record is now worse than useless. It is confidently wrong, and nobody knows.
 
 So the boundary is drawn twice:
 
@@ -63,14 +63,14 @@ So the boundary is drawn twice:
    member reviews and approves. The elder cannot approve their own proposal, cannot pre-fill any
    review field, and cannot forge an audit trail.
 
-The one deliberate exception is low-risk care guidance — support notes auto-apply, because that is
+The one deliberate exception is low-risk care guidance. Support notes auto-apply, because that is
 the feature that most needs to feel effortless, and its blast radius is small. It stays visible and
 editable by the family.
 
 That boundary is enforced **at two independent layers**: the tool layer (an elder session is simply
 never handed a direct-write tool) and row-level security in Postgres. Either alone would be a single
 point of failure. Some tables are legitimately self-writable by the elder for their own setup flows,
-so database policy alone could not stop a voice-driven write — and a tool layer alone would fall to
+so database policy alone could not stop a voice-driven write, and a tool layer alone would fall to
 anything that bypassed it.
 
 **Why two layers instead of one:** the failure mode you are defending against is not a hacker. It is
@@ -79,34 +79,34 @@ a hallucination plus a person who cannot reliably tell you it was wrong.
 ## Other decisions worth naming
 
 **Buy the voice loop, build the personalization.** Low-latency, natural turn-taking is genuinely
-hard, and for this audience the *feel* is the product — a stilted assistant is not a lesser version
+hard, and for this audience the *feel* is the product. A stilted assistant is not a lesser version
 of a good one, it is a different and worse thing. The trade is real: the system prompt and tool
 definitions live on a vendor dashboard rather than only in git, which is a versioning cost we
 accept knowingly.
 
 **End the call from the client, not the server.** A voice session has a lifecycle full of edge
-cases — the microphone silently dying mid-call was a real, reproducible bug, and it is exactly the
+cases. The microphone silently dying mid-call was a real, reproducible bug, and it is exactly the
 kind of failure that a dementia user cannot report.
 
 **A per-user narrative memory layer** was evaluated as a full replacement store, formally compared
-three ways, and rejected as the store — then adopted as a layer on top. Writing down what you
+three ways, and rejected as the store, then adopted as a layer on top. Writing down what you
 rejected, and why, is the part of architecture that survives the team.
 
 ## Stack
 
-Expo / React Native + TypeScript with file-based routing · Supabase (Postgres, Auth, Realtime, Edge
-Functions, Storage) with row-level security throughout · ElevenLabs Conversational AI · a small
+Expo and React Native with TypeScript and file-based routing. Supabase (Postgres, Auth, Realtime, Edge
+Functions, Storage) with row-level security throughout. ElevenLabs Conversational AI. A small
 in-house design system rather than a component library.
 
 Realtime sync keeps the family app and the elder app consistent while a conversation is happening.
 Edge functions handle post-call extraction, semantic recall, scheduled pipeline sweeps, and
-authentication token minting — the sensitive keys never reach a device.
+authentication token minting. The sensitive keys never reach a device.
 
 ## Status
 
-On TestFlight and in active development. I lead the project and the small team building it. Privacy work — DPIA, a granular consent
-flow, an Article 6/9 legal-basis mapping, processor agreements — is scoped and underway ahead of
-wider testing, because voice transcripts, photos, schedules and precise location can constitute
+On TestFlight and in active development. I lead the project and the small team building it. Privacy work is scoped and underway ahead of
+wider testing: a DPIA, a granular consent flow, an Article 6/9 legal basis mapping, and processor
+agreements. This matters because voice transcripts, photos, schedules and precise location can constitute
 special-category health data under GDPR regardless of how few users you have.
 
 ## Screenshots
